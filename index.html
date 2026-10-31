@@ -2530,7 +2530,16 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
           throw new Error("تنسيق books.json غير متوقع");
         }
 
-        allBooks = books.filter(book => book && typeof book === "object");
+        allBooks = books
+          .filter(book => book && typeof book === "object")
+          .sort((a, b) => {
+            const idA = Number(a.id);
+            const idB = Number(b.id);
+            if (Number.isFinite(idA) && Number.isFinite(idB)) return idB - idA;
+            if (Number.isFinite(idB)) return 1;
+            if (Number.isFinite(idA)) return -1;
+            return 0;
+          });
         filteredBooks = allBooks;
 
         elements.totalBooks.textContent = allBooks.length.toLocaleString("ar");
