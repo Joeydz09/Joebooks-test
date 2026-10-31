@@ -2660,7 +2660,17 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
 <script>
 (() => {
   const quoteBox = document.getElementById("dailyQuoteText");
-  // الاقتباس متروك فارغًا إلى حين إضافة اقتباسات أدبية معتمدة.
+  // تحميل اقتباس اليوم حسب توقيت الجزائر من ملف المحتوى المعتمد.
+  fetch("./daily-content.json", { cache: "no-store" })
+    .then(response => { if (!response.ok) throw new Error("daily-content.json unavailable"); return response.json(); })
+    .then(data => {
+      const quotes = Array.isArray(data?.quotes) ? data.quotes : [];
+      const day = Number(new Intl.DateTimeFormat("en", { timeZone: "Africa/Algiers", day: "numeric" }).format(new Date()));
+      const quote = quotes.find(item => Number(item.day) === day);
+      if (quote && typeof quote.text === "string") quoteBox.textContent = "«" + quote.text + "»";
+      else quoteBox.textContent = "ترقّب اقتباسًا جديدًا قريبًا.";
+    })
+    .catch(error => { console.warn("تعذر تحميل اقتباس اليوم:", error); quoteBox.textContent = "ترقّب اقتباسًا جديدًا قريبًا."; });
   fetch("./books.json", { cache: "no-store" })
     .then(response => { if (!response.ok) throw new Error("books.json unavailable"); return response.json(); })
     .then(data => {
