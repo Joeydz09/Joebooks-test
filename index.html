@@ -1362,7 +1362,10 @@
     .daily-card{min-width:0;border:1px solid rgba(205,220,241,.18);border-radius:20px;background:linear-gradient(145deg,#172944,#0d192b);padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.16)}
     .daily-kicker{color:#a8b6c9;font-size:11px;letter-spacing:.3px;margin:0 0 5px}
     .daily-card h2{color:#dce4ef;font-size:19px;margin:0 0 12px}
-    .daily-quote-space{min-height:88px;border:1px dashed rgba(205,220,241,.2);border-radius:13px;background:rgba(255,255,255,.02);padding:14px;color:#a8b6c9;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px}
+    .daily-quote-space{min-height:88px;border:1px dashed rgba(214,184,117,.32);border-radius:13px;background:rgba(214,184,117,.035);padding:14px;color:#f0dba8;display:flex;align-items:center;justify-content:center;text-align:center;font-size:16px;font-weight:700;line-height:1.95;text-shadow:0 0 7px rgba(240,219,168,.28),0 0 16px rgba(214,184,117,.16);animation:dailyQuoteGlow 3.2s ease-in-out infinite alternate}
+    @keyframes dailyQuoteGlow{from{text-shadow:0 0 5px rgba(240,219,168,.2),0 0 12px rgba(214,184,117,.1)}to{text-shadow:0 0 9px rgba(240,219,168,.55),0 0 20px rgba(214,184,117,.28)}}
+    @media(max-width:680px){.daily-quote-space{font-size:15px;line-height:1.9}}
+    @media(prefers-reduced-motion:reduce){.daily-quote-space{animation:none}}
     .daily-book-row{display:flex;gap:14px;align-items:center;min-height:112px}
     .daily-book-cover{width:78px;height:104px;object-fit:cover;border-radius:9px;border:1px solid rgba(220,228,239,.18);background:#0b1426;flex:0 0 78px}
     .daily-book-placeholder{display:grid;place-items:center;color:#a8b6c9;font-size:28px}
