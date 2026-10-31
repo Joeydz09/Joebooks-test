@@ -2402,25 +2402,17 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
         const summary = createElement("p", "book-summary clamped", synopsis);
         info.appendChild(summary);
 
-        const more = createElement("button", "summary-more-btn", "عرض المزيد");
-        more.type = "button";
-        more.hidden = true;
-        more.setAttribute("aria-expanded", "false");
-        more.addEventListener("click", () => {
-          const expanded = summary.classList.toggle("clamped") === false;
-          more.textContent = expanded ? "عرض أقل" : "عرض المزيد";
-          more.setAttribute("aria-expanded", String(expanded));
-        });
-        info.appendChild(more);
-
-        requestAnimationFrame(() => {
-          if (!summary.isConnected) return;
-          summary.classList.remove("clamped");
-          const fullHeight = summary.getBoundingClientRect().height;
-          summary.classList.add("clamped");
-          const clampedHeight = summary.getBoundingClientRect().height;
-          more.hidden = fullHeight > clampedHeight + 1;
-        });
+        if (synopsis.length > 110) {
+          const more = createElement("button", "summary-more-btn", "عرض المزيد");
+          more.type = "button";
+          more.setAttribute("aria-expanded", "false");
+          more.addEventListener("click", () => {
+            const expanded = summary.classList.toggle("clamped") === false;
+            more.textContent = expanded ? "عرض أقل" : "عرض المزيد";
+            more.setAttribute("aria-expanded", String(expanded));
+          });
+          info.appendChild(more);
+        }
       }
       const actions = createElement("div", "book-actions");
 
