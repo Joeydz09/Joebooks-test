@@ -1357,6 +1357,21 @@
   color: #f8faff;
   box-shadow: 0 3px 12px rgba(0, 0, 0, .15);
 }
+
+    .daily-features{width:min(1180px,calc(100% - 32px));margin:0 auto 34px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .daily-card{min-width:0;border:1px solid rgba(205,220,241,.18);border-radius:20px;background:linear-gradient(145deg,#172944,#0d192b);padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.16)}
+    .daily-kicker{color:#a8b6c9;font-size:11px;letter-spacing:.3px;margin:0 0 5px}
+    .daily-card h2{color:#dce4ef;font-size:19px;margin:0 0 12px}
+    .daily-quote-space{min-height:88px;border:1px dashed rgba(205,220,241,.2);border-radius:13px;background:rgba(255,255,255,.02);padding:14px;color:#a8b6c9;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px}
+    .daily-book-row{display:flex;gap:14px;align-items:center;min-height:112px}
+    .daily-book-cover{width:78px;height:104px;object-fit:cover;border-radius:9px;border:1px solid rgba(220,228,239,.18);background:#0b1426;flex:0 0 78px}
+    .daily-book-placeholder{display:grid;place-items:center;color:#a8b6c9;font-size:28px}
+    .daily-book-info{min-width:0;flex:1}
+    .daily-book-title{color:#f8faff;font-weight:bold;font-size:14px;margin:0 0 4px}
+    .daily-book-author{color:#a8b6c9;font-size:11px;margin:0 0 8px}
+    .daily-book-summary{color:#b5c1d2;font-size:11px;line-height:1.8;margin:0 0 9px}
+    .daily-book-link{display:inline-flex;padding:7px 13px;border-radius:9px;background:#dce4ef;color:#101a2b;text-decoration:none;font-size:11px;font-weight:bold}
+    @media(max-width:680px){.daily-features{width:calc(100% - 24px);grid-template-columns:1fr;gap:12px}.daily-card{padding:16px}.daily-card h2{font-size:17px}}
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style id="my-sites-horizontal-fix">
@@ -1602,6 +1617,19 @@ html[data-theme="light"] #clearSearch {
           <span>كتاب معروض</span>
         </div>
       </div>
+    </section>
+
+    <section class="daily-features" aria-label="محتوى اليوم">
+      <article class="daily-card" aria-labelledby="dailyQuoteHeading">
+        <p class="daily-kicker">كلمات تستحق التأمل</p>
+        <h2 id="dailyQuoteHeading">اقتباس اليوم</h2>
+        <div class="daily-quote-space" id="dailyQuoteText" aria-live="polite"></div>
+      </article>
+      <article class="daily-card" aria-labelledby="dailyBookHeading">
+        <p class="daily-kicker">اختيار يومي من رفوف المكتبة</p>
+        <h2 id="dailyBookHeading">كتاب اليوم</h2>
+        <div class="daily-book-row" id="dailyBookContent"><span class="daily-book-author">جارٍ اختيار كتاب اليوم...</span></div>
+      </article>
     </section>
 
     <section class="container" aria-label="البحث عن الكتب">
@@ -2628,6 +2656,51 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
   location.replace("./book.html?id=" + match[1]);
 })();
 </script>
+
+<script>
+(() => {
+  const quoteBox = document.getElementById("dailyQuoteText");
+  // الاقتباس متروك فارغًا إلى حين إضافة اقتباسات أدبية معتمدة.
+  fetch("./books.json", { cache: "no-store" })
+    .then(response => { if (!response.ok) throw new Error("books.json unavailable"); return response.json(); })
+    .then(data => {
+      const books = Array.isArray(data) ? data : data && Array.isArray(data.books) ? data.books : [];
+      if (!books.length) throw new Error("No books");
+      const valid = books.filter(book => book && typeof book === "object" && (book.title || book.name));
+      if (!valid.length) throw new Error("No valid books");
+      const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Algiers", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
+      const dateKey = parts.filter(part => ["year","month","day"].includes(part.type)).map(part => part.value).join("");
+      let hash = 0;
+      for (const char of dateKey) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+      const book = valid[hash % valid.length];
+      const title = String(book.title || book.name || "كتاب بدون عنوان");
+      const author = String(book.author || book.writer || "");
+      const synopsis = String(book.synopsis || book.summary || book.description || "");
+      const cover = String(book.cover || book.cover_url || book.image || book.image_url || book.thumbnail || book.thumbnail_url || "");
+      const link = String(book.url || book.link || "");
+      const content = document.getElementById("dailyBookContent");
+      content.replaceChildren();
+      if (cover && /^https:\/\//i.test(cover)) {
+        const image = document.createElement("img");
+        image.className = "daily-book-cover"; image.alt = "غلاف " + title; image.loading = "lazy"; image.src = cover;
+        image.onerror = () => { image.remove(); };
+        content.appendChild(image);
+      } else {
+        const placeholder = document.createElement("div");
+        placeholder.className = "daily-book-cover daily-book-placeholder"; placeholder.textContent = "▤";
+        content.appendChild(placeholder);
+      }
+      const info = document.createElement("div"); info.className = "daily-book-info";
+      const heading = document.createElement("p"); heading.className = "daily-book-title"; heading.textContent = title; info.appendChild(heading);
+      if (author) { const by = document.createElement("p"); by.className = "daily-book-author"; by.textContent = "المؤلف: " + author; info.appendChild(by); }
+      if (synopsis) { const summary = document.createElement("p"); summary.className = "daily-book-summary"; summary.textContent = synopsis.length > 150 ? synopsis.slice(0,147) + "..." : synopsis; info.appendChild(summary); }
+      if (link && /^https:\/\//i.test(link)) { const a = document.createElement("a"); a.className = "daily-book-link"; a.href = link; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "اكتشف الكتاب"; info.appendChild(a); }
+      content.appendChild(info);
+    })
+    .catch(error => { console.warn("تعذر تحميل كتاب اليوم:", error); document.getElementById("dailyBookContent").textContent = "سيظهر كتاب اليوم عند توفر بيانات المكتبة."; });
+})();
+</script>
+
 </body>
 </html>
 
