@@ -61,7 +61,7 @@ function render(){
   for(const b of list){
     const card=document.createElement("article");card.className="book";
     const cover=document.createElement("div");cover.className="cover";cover.textContent="📖";
-    if(b.cover){const img=document.createElement("img");img.src="../"+b.cover.replace(/^\.\//,"").replace(/^\/+ /,"");img.alt="غلاف "+b.title;img.loading="lazy";img.onerror=()=>{cover.textContent="📖"};cover.append(img)}
+    if(b.cover){const img=document.createElement("img");img.src="../"+b.cover.replace(/^\.\//,"").replace(/^\/+/,"");img.alt="غلاف "+b.title;img.loading="lazy";img.onerror=()=>{cover.textContent="📖"};cover.append(img)}
     const head=document.createElement("div");head.className="book-head";
     const info=document.createElement("div");info.className="book-info";info.innerHTML='<div class="title"></div><div class="author"></div>';
     info.querySelector(".title").textContent=b.title;info.querySelector(".author").textContent=b.author||"كاتب غير محدد";
