@@ -2117,12 +2117,12 @@ html[data-theme="light"] #clearSearch {
       if (sortMode === "newest" || sortMode === "oldest") {
         const direction = sortMode === "newest" ? -1 : 1;
         filteredBooks.sort((a, b) => {
-          const dateA = Date.parse(getValue(a.created_at || a.added_at || a.date).replace(" ", "T"));
-          const dateB = Date.parse(getValue(b.created_at || b.added_at || b.date).replace(" ", "T"));
-          const validA = Number.isFinite(dateA);
-          const validB = Number.isFinite(dateB);
+          const idA = Number(a.id);
+          const idB = Number(b.id);
+          const validA = Number.isFinite(idA);
+          const validB = Number.isFinite(idB);
 
-          if (validA && validB) return (dateA - dateB) * direction;
+          if (validA && validB) return (idA - idB) * direction;
           if (validA) return -1;
           if (validB) return 1;
           return 0;
