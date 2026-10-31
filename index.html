@@ -221,6 +221,37 @@
       gap: 10px;
     }
 
+    .sort-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      margin-top: 14px;
+      color: var(--silver-muted);
+      font-size: 13px;
+    }
+
+    #sortBooks {
+      min-height: 42px;
+      min-width: 190px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(4, 12, 25, .7);
+      color: var(--silver);
+      cursor: pointer;
+    }
+
+    #sortBooks option {
+      background: #0b1426;
+      color: #dce4ef;
+    }
+
+    @media (max-width: 520px) {
+      .sort-row { justify-content: space-between; }
+      #sortBooks { flex: 1; min-width: 0; }
+    }
+
     .search-box {
       flex: 1;
       min-width: 0;
@@ -1632,6 +1663,14 @@ html[data-theme="light"] #clearSearch {
           </div>
           <button class="clear-btn" id="clearSearch" type="button">مسح</button>
         </div>
+        <div class="sort-row">
+          <label for="sortBooks">ترتيب الكتب</label>
+          <select id="sortBooks" aria-label="ترتيب الكتب">
+            <option value="default">الترتيب الافتراضي</option>
+            <option value="newest">الأحدث إضافة</option>
+            <option value="oldest">الأقدم إضافة</option>
+          </select>
+        </div>
 
         <div class="filter-heading" id="categoryToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="categories" style="cursor:pointer;">
           <strong>تصفّح حسب التصنيف</strong>
@@ -1861,6 +1900,7 @@ html[data-theme="light"] #clearSearch {
     const elements = {
       search: document.getElementById("searchInput"),
       clear: document.getElementById("clearSearch"),
+      sort: document.getElementById("sortBooks"),
       categories: document.getElementById("categories"),
       categoryCount: document.getElementById("categoryCount"),
       grid: document.getElementById("booksGrid"),
@@ -2072,6 +2112,22 @@ html[data-theme="light"] #clearSearch {
 
         return searchable.includes(query);
       });
+
+      const sortMode = elements.sort.value;
+      if (sortMode === "newest" || sortMode === "oldest") {
+        const direction = sortMode === "newest" ? -1 : 1;
+        filteredBooks.sort((a, b) => {
+          const dateA = Date.parse(getValue(a.created_at || a.added_at || a.date).replace(" ", "T"));
+          const dateB = Date.parse(getValue(b.created_at || b.added_at || b.date).replace(" ", "T"));
+          const validA = Number.isFinite(dateA);
+          const validB = Number.isFinite(dateB);
+
+          if (validA && validB) return (dateA - dateB) * direction;
+          if (validA) return -1;
+          if (validB) return 1;
+          return 0;
+        });
+      }
 
       visibleCount = Math.min(visibleCount, PAGE_SIZE);
       renderBooks();
@@ -2491,6 +2547,11 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
     }
 
     elements.search.addEventListener("input", () => {
+      visibleCount = PAGE_SIZE;
+      applyFilters();
+    });
+
+    elements.sort.addEventListener("change", () => {
       visibleCount = PAGE_SIZE;
       applyFilters();
     });
