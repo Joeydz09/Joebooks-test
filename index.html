@@ -1554,6 +1554,32 @@ html[data-theme="light"] #clearSearch {
   <!-- GoatCounter analytics for Joebooks -->
   <script data-goatcounter="https://joedz.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
+
+  <style id="daily-cards-gold-touch">
+    /* لمسة ذهبية متناسقة مع بطاقات الكتب، دون تغيير الحجم أو الموضع */
+    .daily-card {
+      border-color: rgba(214, 184, 117, .22);
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .daily-card:active {
+      transform: translateY(-4px) scale(.99);
+      border-color: rgba(214, 184, 117, .75);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, .25), 0 0 13px rgba(214, 184, 117, .10);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .daily-card:hover {
+        border-color: rgba(214, 184, 117, .55);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, .22), 0 0 12px rgba(214, 184, 117, .08);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .daily-card { transition: none !important; }
+      .daily-card:active { transform: none; }
+    }
+  </style>
+
 </head>
 
 <body>
