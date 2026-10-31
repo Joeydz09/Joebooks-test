@@ -2404,6 +2404,7 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
 
         const more = createElement("button", "summary-more-btn", "عرض المزيد");
         more.type = "button";
+        more.hidden = true;
         more.setAttribute("aria-expanded", "false");
         more.addEventListener("click", () => {
           const expanded = summary.classList.toggle("clamped") === false;
@@ -2411,6 +2412,15 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
           more.setAttribute("aria-expanded", String(expanded));
         });
         info.appendChild(more);
+
+        requestAnimationFrame(() => {
+          if (!summary.isConnected) return;
+          summary.classList.remove("clamped");
+          const fullHeight = summary.getBoundingClientRect().height;
+          summary.classList.add("clamped");
+          const clampedHeight = summary.getBoundingClientRect().height;
+          more.hidden = fullHeight > clampedHeight + 1;
+        });
       }
       const actions = createElement("div", "book-actions");
 
