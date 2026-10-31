@@ -2540,6 +2540,9 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
     function showBookDetails(bookId) {
       const book = allBooks.find(item => String(item.id) === String(bookId));
       if (!book) return;
+      if (!document.getElementById("joebooksBookPanel")) {
+        window.__joebooksLibraryScrollY = window.scrollY || 0;
+      }
 
       let panel = document.getElementById("joebooksBookPanel");
       if (!panel) {
@@ -2549,6 +2552,7 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
         panel.style.cssText = "position:fixed;inset:0;z-index:9999;overflow:auto;background:#0b1426;color:#f8faff;padding:18px 16px 40px;font-family:Tahoma,Arial,sans-serif;";
         document.body.appendChild(panel);
       }
+      panel.hidden = false;
 
       panel.replaceChildren();
       const wrap = document.createElement("div");
@@ -2557,11 +2561,14 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
       back.type = "button";
       back.textContent = "← العودة إلى المكتبة";
       back.style.cssText = "padding:10px 18px;border:1px solid rgba(220,228,239,.25);border-radius:10px;background:#14223a;color:#dce4ef;font:inherit;cursor:pointer;margin-bottom:20px;";
-      back.addEventListener("click", () => {
-        panel.remove();
+      back.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
         window.__joebooksStartBookId = "";
+        panel.hidden = true;
         document.title = "مكتبة الأحلام | عالم من الحكايات";
-      });
+        window.scrollTo({ top: window.__joebooksLibraryScrollY || 0, behavior: "auto" });
+      }, true);
       wrap.appendChild(back);
 
       const card = document.createElement("article");
