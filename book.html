@@ -192,13 +192,34 @@
           return;
         }
 
+        const rawBookUrl = String(book.url || book.link || "").trim();
+        let validBookUrl = "";
+        try {
+          if (rawBookUrl && !rawBookUrl.startsWith("//")) {
+            const parsedUrl = new URL(rawBookUrl, location.href);
+            if (
+              parsedUrl.protocol === "https:" ||
+              (parsedUrl.origin === location.origin && parsedUrl.protocol === location.protocol)
+            ) {
+              validBookUrl = parsedUrl.href;
+            }
+          }
+        } catch (_) {
+          // الرابط غير صالح؛ لا نعرض السجل المؤقت.
+        }
+
+        if (!validBookUrl) {
+          showError("هذا الكتاب قيد التجهيز، وسيظهر في المكتبة بعد اكتمال نشره.");
+          return;
+        }
+
         const title = String(book.title || "كتاب بدون عنوان");
         const author = String(book.author || "");
         const synopsis = String(book.synopsis || book.summary || book.description || "");
         const cover = String(book.cover || "");
         const category = String(book.category || "");
         const pages = book.pages ? String(book.pages) : "";
-        const url = String(book.url || book.link || "");
+        const url = validBookUrl;
 
         document.title = title + " | مكتبة الأحلام";
         content.className = "book";
