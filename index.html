@@ -2155,7 +2155,9 @@ function renderBookShelf() {
   if (!list || !wantCount || !readCount) return;
 
   const shelf = getBookShelf();
-  const entries = Object.entries(shelf);
+  const entries = Object.entries(shelf).filter(([bookId]) =>
+    allBooks.some(book => String(book.id) === bookId)
+  );
   const wantBooks = entries.filter(([, item]) => item.status === "want");
   const readBooks = entries.filter(([, item]) => item.status === "read");
 
@@ -2505,7 +2507,7 @@ document.getElementById("clearContinueReading")?.addEventListener("click", () =>
           throw new Error("تنسيق books.json غير متوقع");
         }
 
-        allBooks = books.filter(book => book && typeof book === "object");
+        allBooks = books.filter(book => book && typeof book === "object" && getBookUrl(book));
         filteredBooks = allBooks;
 
         elements.totalBooks.textContent = allBooks.length.toLocaleString("ar");
